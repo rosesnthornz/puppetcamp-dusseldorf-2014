@@ -1,0 +1,55 @@
+1. Install openldap-servers, openldap-clients
+
+2. Run slappasswd command and enter password, it'll generate an encrypted password
+
+3. In /etc/openldap/slapd.d/cn=config/olcDatabase={2}.bdb.ldif, edit and add following lines,
+
+olcSuffix: dc=puppetcamp,dc=com
+olcRootDN: cn=Manager,dc=puppetcamp,dc=com
+olcRootPW: <encrypted password from Step 2>
+
+4. In /etc/openldap/slapd.d/cn=config/olcDatabase={0}config.ldif, edit and add following lines,
+
+olcRootDN: cn=config
+olcRootPW: <encrypted password from Step 2>
+
+5. Start slapd daemon and verify,
+
+# ldapsearch -LLL -x -b'dc=puppetcamp,dc=com'
+No such object (32)
+
+6. Copy example puppet schema file to openldap schema directory,
+
+# cp /usr/share/puppet/ext/ldap/puppet.schema /etc/openldap/schema
+
+7. Create a file /tmp/puppet-ldap.conf and add following line to it,
+
+include /etc/openldap/schema/puppet.schema
+
+8. Create a temporary directory /tmp/puppet-ldap and run following command to generate a structure to be imported into LDAP,
+
+# slaptest -f /tmp/puppet-ldap.conf -F /tmp/puppet-ldap/
+
+9. The file we need is /tmp/puppet-ldap/cn=config/cn=schema/cn={0}puppet.ldif, edit it to look like the file in repository, puppetcamp/ldap/cn={0}puppet.ldif
+
+10. Add the structure in LDAP with the following command,
+
+# ldapadd -x -f cn\=\{0\}puppet.ldif -D'cn=config' -W
+
+11. Add the top level organization, roles and containers for the nodes and puppet configuration, the file being used is from the repository, puppetcamp/ldap/puppet-data.ldif,
+
+# ldapadd -x -f puppet-data.ldif -D'cn=manager,dc=puppetcamp,dc=com' -W
+
+12. Create a file for the node definition and add it to LDAP, the file being used is from the repository, puppetcamp/ldap/pcbpweb01.ldif
+
+# ldapadd -x -f pcbpweb01.ldif -D'cn=manager,dc=puppetcamp,dc=com' -W
+
+13. Make sure ruby-ldap is installed on the puppet master node
+
+14. Edit puppet.conf on the puppet master node to have the following lines,
+
+node_terminus = ldap
+ldapserver = ldap.puppetcamp.com
+ldapbase = ou=hosts,dc=puppetcamp,dc=com
+
+15. Restart httpd for puppet master to read new configuration

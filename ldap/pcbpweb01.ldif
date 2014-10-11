@@ -1,0 +1,15 @@
+dn: cn=pcbpweb01.puppetcamp.com,ou=production,ou=hosts,dc=puppetcamp.com,dc=com
+objectclass: puppetClient
+objectclass: device
+environment: production
+puppetClass: groups
+puppetClass: sudo
+puppetClass: hostconfig
+puppetClass: ntp
+puppetClass: users::ops
+puppetClass: users::keys
+puppetClass: users::repo
+puppetClass: apache
+puppetvar: location='puppetcamp_berlin'
+puppetvar: puppetserver='192.168.0.2'
+puppetvar: adminserver='192.168.0.2'

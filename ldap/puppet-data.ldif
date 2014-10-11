@@ -1,0 +1,22 @@
+dn: dc=puppetcamp,dc=com
+objectclass: dcObject
+objectclass: organization
+o: Puppetcamp
+dc: puppetcamp
+
+dn: cn=Manager, dc=puppetcamp, dc=com
+objectClass: top
+objectClass: organizationalRole
+cn: Manager
+
+dn: ou=hosts,dc=puppetcamp,dc=com
+objectclass: organizationalUnit
+ou: hosts
+
+dn: ou=production,ou=hosts,dc=puppetcamp,dc=com
+objectclass: organizationalUnit
+ou: production
+
+dn: ou=staging,ou=hosts,dc=puppetcamp,dc=com
+objectclass: organizationalUnit
+ou: staging
